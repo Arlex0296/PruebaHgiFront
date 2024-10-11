@@ -72,10 +72,8 @@ const Usuarios = () => {
       alert('Ocurrió un error inesperado.');
     }
   };
-
+  
   const handleActualizarUsuario = async (usuarioActualizado) => {
-   
-
     try {
       const response = await fetch(`http://localhost:5129/api/usuarios/${usuarioActualizado.id}`, {
         method: 'PUT',
@@ -90,8 +88,6 @@ const Usuarios = () => {
         throw new Error(`Error al actualizar el usuario: ${errorText}`);
       }
 
-      const data = await response.json();
-      
       const nuevosUsuarios = await fetchData();
       setUsuarios(nuevosUsuarios);
       handleCloseEditar();
@@ -101,7 +97,6 @@ const Usuarios = () => {
   };
 
   const handleDelete = async (id) => {
-    
     try {
       const response = await fetch(`http://localhost:5129/api/usuarios/${id}`, {
         method: 'DELETE',
@@ -116,7 +111,6 @@ const Usuarios = () => {
       }
 
       setUsuarios((prevUsuarios) => prevUsuarios.filter((usuario) => usuario.id !== id));
-      
     } catch (error) {
       console.error('Error al eliminar usuario:', error);
     }
@@ -184,20 +178,38 @@ const Usuarios = () => {
                   <strong style={{ cursor: 'pointer' }}>Nombre</strong>
                 </TableCell>
               </Tooltip>
+              <TableCell><strong>Acciones</strong></TableCell> {/* Nueva columna de Acciones */}
             </TableRow>
           </TableHead>
           <TableBody>
             {usuariosFiltrados.map((usuario) => (
-              <TableRow key={usuario.id} onClick={() => handleOpenDetalles(usuario)} style={{ cursor: 'pointer' }}>
+              <TableRow key={usuario.id}>
                 <TableCell>{usuario.id}</TableCell>
-                <TableCell>{usuario.name}</TableCell>
+                <TableCell onClick={() => handleOpenDetalles(usuario)} style={{ cursor: 'pointer' }}>{usuario.name}</TableCell>
+                <TableCell>
+                  <Button 
+                    variant="contained" 
+                    color="primary" 
+                    onClick={() => handleOpenEditar(usuario)}
+                    sx={{ marginRight: 1 }}
+                  >
+                    Editar
+                  </Button>
+                  <Button 
+                    variant="contained" 
+                    color="secondary" 
+                    onClick={() => handleDelete(usuario.id)}
+                  >
+                    Eliminar
+                  </Button>
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>
         </Table>
       </TableContainer>
 
-      
+      {/* Modal para ver detalles */}
       <Modal
         open={openDetalles}
         onClose={handleCloseDetalles}
@@ -244,14 +256,14 @@ const Usuarios = () => {
         </Box>
       </Modal>
 
-    
+      {/* Modal para crear usuario */}
       <CrearUsuario 
         open={openCrear} 
         handleClose={handleCloseCrear} 
         handleCrearUsuario={handleCrearUsuario} 
       />
 
-    
+      {/* Modal para editar usuario */}
       <EditarUsuario 
         open={openEditar} 
         handleClose={handleCloseEditar} 
