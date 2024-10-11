@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { fetchData } from '../Apis/ApiGet/index';
+import { fetchData } from '../../Api/index';
 import { 
   Table, 
   TableBody, 
@@ -16,8 +16,9 @@ import {
   Tooltip, 
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
-import CrearUsuario from '../CrearUsuario/index'; 
-import EditarUsuario from '../EditarUsuario/index'; 
+import CrearUsuario from '../../Componenetes/CrearUsuario/index'; 
+import EditarUsuario from '../../Componenetes/EditarUsuario/index'; 
+import { API_URL } from  '../../Utils/utils'
 
 const Usuarios = () => {
   const [usuarios, setUsuarios] = useState([]);
@@ -45,37 +46,45 @@ const Usuarios = () => {
   const handleCloseDetalles = () => setOpenDetalles(false);
 
   const handleCrearUsuario = async (nuevoUsuario) => {
-    
     try {
-      const response = await fetch('http://localhost:5129/api/usuarios', {
+      
+      console.log('Enviando datos:', JSON.stringify(nuevoUsuario));
+      
+      const response = await fetch(API_URL, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(nuevoUsuario),
       });
-
-      if (response.ok) {
-        const data = await response.json();
+   
+      if (response.ok) { 
+        const data = await response.json();  
+        alert(data.message)
         
         handleCloseCrear();
-        await cargarUsuarios();
+        fetchUsuarios()
       } else if (response.status === 409) {
         const errorData = await response.json();
+
         alert(errorData.message || 'El documento ya está guardado.');
-        await cargarUsuarios();
+        fetchUsuarios()
       } else {
+        const errorData = await response.json();
+        
+        
         throw new Error('Error al crear el usuario');
       }
     } catch (error) {
-      console.error('Error al crear usuario:', error);
+    
       alert('Ocurrió un error inesperado.');
     }
   };
   
+
   const handleActualizarUsuario = async (usuarioActualizado) => {
     try {
-      const response = await fetch(`http://localhost:5129/api/usuarios/${usuarioActualizado.id}`, {
+      const response = await fetch(`${API_URL}/${usuarioActualizado.id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -98,7 +107,7 @@ const Usuarios = () => {
 
   const handleDelete = async (id) => {
     try {
-      const response = await fetch(`http://localhost:5129/api/usuarios/${id}`, {
+      const response = await fetch(`${API_URL}/${id}`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
@@ -116,18 +125,21 @@ const Usuarios = () => {
     }
   };
 
+  const fetchUsuarios = async () => {
+    setCargando(true);
+    try {
+      const data = await fetchData(); 
+      setUsuarios(data);
+    } catch (error) {
+      setError('Error al obtener usuarios');
+    } finally {
+      setCargando(false);
+    }
+  };
+
+
   useEffect(() => {
-    const fetchUsuarios = async () => {
-      setCargando(true);
-      try {
-        const data = await fetchData(); 
-        setUsuarios(data);
-      } catch (error) {
-        setError('Error al obtener usuarios');
-      } finally {
-        setCargando(false);
-      }
-    };
+   
 
     fetchUsuarios();
   }, []);
@@ -178,7 +190,7 @@ const Usuarios = () => {
                   <strong style={{ cursor: 'pointer' }}>Nombre</strong>
                 </TableCell>
               </Tooltip>
-              <TableCell><strong>Acciones</strong></TableCell> {/* Nueva columna de Acciones */}
+              <TableCell><strong>Acciones</strong></TableCell> 
             </TableRow>
           </TableHead>
           <TableBody>
@@ -209,7 +221,7 @@ const Usuarios = () => {
         </Table>
       </TableContainer>
 
-      {/* Modal para ver detalles */}
+      
       <Modal
         open={openDetalles}
         onClose={handleCloseDetalles}
@@ -256,14 +268,14 @@ const Usuarios = () => {
         </Box>
       </Modal>
 
-      {/* Modal para crear usuario */}
+      
       <CrearUsuario 
         open={openCrear} 
         handleClose={handleCloseCrear} 
         handleCrearUsuario={handleCrearUsuario} 
       />
 
-      {/* Modal para editar usuario */}
+      
       <EditarUsuario 
         open={openEditar} 
         handleClose={handleCloseEditar} 
