@@ -45,7 +45,7 @@ const Usuarios = () => {
   const handleCloseDetalles = () => setOpenDetalles(false);
 
   const handleCrearUsuario = async (nuevoUsuario) => {
-    console.log('Datos a enviar:', nuevoUsuario);
+    
     try {
       const response = await fetch('http://localhost:5129/api/usuarios', {
         method: 'POST',
@@ -57,7 +57,7 @@ const Usuarios = () => {
 
       if (response.ok) {
         const data = await response.json();
-        console.log('Usuario creado:', data);
+        
         handleCloseCrear();
         await cargarUsuarios();
       } else if (response.status === 409) {
@@ -74,7 +74,7 @@ const Usuarios = () => {
   };
 
   const handleActualizarUsuario = async (usuarioActualizado) => {
-    console.log('Datos del usuario a actualizar:', usuarioActualizado);
+   
 
     try {
       const response = await fetch(`http://localhost:5129/api/usuarios/${usuarioActualizado.id}`, {
@@ -91,7 +91,7 @@ const Usuarios = () => {
       }
 
       const data = await response.json();
-      console.log('Usuario actualizado:', data);
+      
       const nuevosUsuarios = await fetchData();
       setUsuarios(nuevosUsuarios);
       handleCloseEditar();
@@ -101,7 +101,7 @@ const Usuarios = () => {
   };
 
   const handleDelete = async (id) => {
-    console.log('Eliminar usuario con id:', id);
+    
     try {
       const response = await fetch(`http://localhost:5129/api/usuarios/${id}`, {
         method: 'DELETE',
@@ -116,7 +116,7 @@ const Usuarios = () => {
       }
 
       setUsuarios((prevUsuarios) => prevUsuarios.filter((usuario) => usuario.id !== id));
-      console.log('Usuario eliminado con éxito');
+      
     } catch (error) {
       console.error('Error al eliminar usuario:', error);
     }
@@ -197,7 +197,7 @@ const Usuarios = () => {
         </Table>
       </TableContainer>
 
-      {/* Modal para detalles del usuario */}
+      
       <Modal
         open={openDetalles}
         onClose={handleCloseDetalles}
@@ -244,14 +244,14 @@ const Usuarios = () => {
         </Box>
       </Modal>
 
-      {/* Modal para crear usuario */}
+    
       <CrearUsuario 
         open={openCrear} 
         handleClose={handleCloseCrear} 
         handleCrearUsuario={handleCrearUsuario} 
       />
 
-      {/* Modal para editar usuario */}
+    
       <EditarUsuario 
         open={openEditar} 
         handleClose={handleCloseEditar} 

@@ -1,7 +1,7 @@
-// src/components/Api.jsx
+
 import React, { useEffect, useState } from 'react';
 
-// Exporta fetchData para ser reutilizada en otros componentes
+
 export const fetchData = async () => {
     try {
         const response = await fetch('http://localhost:5129/api/usuarios');
